@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %} File Listing {% endblock %}
+{% block content %}
+
+<section >
+    <div class="">
+        <h2 class="center_align jumbotron">Welcome to Available files</h2>
+      </div>
+
+    {% if data %}
+<!--        {% for obj in data %}-->
+    <div class="card" style="width:400px">
+        <img class="card-img-top" src="https://www.w3schools.com/bootstrap4/img_avatar1.png" alt="Card image" style="width:100%">
+        <div class="card-body">
+          <h4 class="card-title">John Doe</h4>
+          <p class="card-text">Some example text some example text. John Doe is an architect and engineer</p>
+          <a href="#" class="btn btn-primary">See Profile</a>
+        </div>
+    </div>
+    <br>
+<!--        {% endfor %}-->
+    {% else %}
+        <h2 class="center_align jumbotron"> No data available for you !! </h2>
+    {% endif %}
+</section>
+
+<footer>
+    <p>{% include "footer.html" %}</p>
+</footer>
+{% endblock %}

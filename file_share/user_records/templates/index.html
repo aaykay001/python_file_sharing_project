@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %} Home Page {% endblock %}
+{% block content %}
+
+<section >
+  <div class="">
+    <h2 class="center_align jumbotron">Welcome to File Sharing service</h2>
+    <div>
+       <form method="post" action="" class='mt-3' enctype="multipart/form-data">
+       {% csrf_token %}
+          <div class="col-md-8 mx-auto my-auto">
+              <label>Upload Image : </label>
+              <input type="file" name="myfile"
+                     value=""
+                     placeholder="jpg, jpeg, png format only!!!"
+                     required>
+              <br>
+              <br>
+              <button class="btn btn-primary" type="submit">Submit</button>
+          </div>
+        </form>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+    <p>{% include "footer.html" %}</p>
+</footer>
+{% endblock %}
