@@ -52,10 +52,12 @@ PROJECT_APPS = [
 ]
 
 THIRDPARTY_APPS = [
-    'bootstrap4'
+    'bootstrap4',
+    'crispy_forms'
 ]
 
 INSTALLED_APPS = DEFAULT_APPS + REST_FRMW_APPS + PROJECT_APPS + THIRDPARTY_APPS
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

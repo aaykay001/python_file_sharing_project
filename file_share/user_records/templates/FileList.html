@@ -8,18 +8,40 @@
         <h2 class="center_align jumbotron">Welcome to Available files</h2>
       </div>
 
-    {% if data %}
-<!--        {% for obj in data %}-->
-    <div class="card" style="width:400px">
-        <img class="card-img-top" src="https://www.w3schools.com/bootstrap4/img_avatar1.png" alt="Card image" style="width:100%">
-        <div class="card-body">
-          <h4 class="card-title">John Doe</h4>
-          <p class="card-text">Some example text some example text. John Doe is an architect and engineer</p>
-          <a href="#" class="btn btn-primary">See Profile</a>
-        </div>
+    {% if my_data_status %}
+        <div class="m-3 p-3">
+        <table class="table table-hover">
+            <thead class="custom_table_header">
+              <tr>
+                <th>S.no</th>
+                <th>Admin User Name</th>
+                <th>File Name</th>
+                <th>Downloadable Url  </th>
+                <th>Description</th>
+                <th>Upload Time</th>
+                 <th> Shared with </th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for data in my_data%}
+              <tr>
+                <th>{{ forloop.counter }}</th>
+                <th> {{data.admin_user_name }} </th>
+                <th> {{data.file_name }} </th>
+                <th class="btn btn-primary"><a href="{{data.file_url}}"  style="color:white" download>Download</a></th>
+                <th> {{data.description }} </th>
+                <th>{{ data.created_at }}</th>
+                 <th>
+                     {% for i in data.shared_with.all %}
+                        <p>{{i.username}}</p>
+                     {% endfor %}
+                 </th>
+              </tr>
+            {% endfor %}
+
+            </tbody>
+      </table>
     </div>
-    <br>
-<!--        {% endfor %}-->
     {% else %}
         <h2 class="center_align jumbotron"> No data available for you !! </h2>
     {% endif %}

@@ -9,9 +9,12 @@ from django.views.generic import RedirectView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
+from django.conf import settings
+from django.db.models import Q
 
 # db imports
 from user_records.models import FileInfo
+from django.contrib.auth.models import User
 
 # cloudinary imports
 from configparser import ConfigParser
@@ -50,7 +53,7 @@ class LogoutView(RedirectView):
         return super(LogoutView, self).get(request, *args, **kwargs)
 
 
-class HomePageView(LoginRequiredMixin, TemplateView ):
+class HomePageView(LoginRequiredMixin, CreateView):
     config = ConfigParser()
     config.read(config_file)
     cloudinary.config(
@@ -58,6 +61,8 @@ class HomePageView(LoginRequiredMixin, TemplateView ):
         api_key=config.get('CLOUDINARY', 'api_key'),
         api_secret=config.get('CLOUDINARY', 'api_secret'),
     )
+    model = FileInfo
+    fields = ('file_name', 'description', 'shared_with')
     template_name = 'index.html'
 
     def post(self, request, *args, **kwargs):
@@ -65,13 +70,39 @@ class HomePageView(LoginRequiredMixin, TemplateView ):
         fs = FileSystemStorage()
         # save the file in the specific folder
         saved_file = fs.save(name_of_file.name, name_of_file)
-        print(saved_file)
-        predicted_details = {}
-        return super(TemplateView, self).render_to_response({})
+        final_path = os.path.join(settings.MEDIA_ROOT, saved_file)
+        read_file = open(final_path, 'rb')
+        readed_file_obj = read_file.read()
+        created_data_obj = cloudinary.uploader.upload(
+            readed_file_obj,
+            folder="test_folder/",
+            public_id=name_of_file.name,
+            overwrite=True,
+            resource_type="raw"
+        )
+        # os.remove(final_path)
+        save_in_db = FileInfo.objects.create(
+            admin_id=request.user.id,
+            admin_user_name=request.user.username,
+            description=request.POST['description'],
+            file_url=created_data_obj['secure_url'],
+            file_name=request.POST['file_name'],
+        )
+        shared_ids = request.POST.getlist('shared_with')
+        for i in shared_ids:
+            user_obj = User.objects.get(id=int(i))
+            save_in_db.shared_with.add(user_obj)
+        messages.success(request, "Your file shared successfully !!!")
+        return super(HomePageView, self).get(request, *args, **kwargs)
 
 
 class FileListView(LoginRequiredMixin, TemplateView, ListView):
     model = FileInfo
     template_name = 'FileList.html'
-    context_object_name = 'data'
     object_list = FileInfo.objects.filter()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['my_data'] = FileInfo.objects.filter(Q(admin_id=self.request.user.id) | Q(shared_with__in=[self.request.user]))
+        context['my_data_status'] = True if len(context['my_data']) > 0 else False
+        return context
