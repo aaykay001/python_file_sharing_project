@@ -103,6 +103,6 @@ class FileListView(LoginRequiredMixin, TemplateView, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['my_data'] = FileInfo.objects.filter(Q(admin_id=self.request.user.id) | Q(shared_with__in=[self.request.user]))
+        context['my_data'] = FileInfo.objects.filter(Q(admin_id=self.request.user.id) | Q(shared_with__in=[self.request.user])).distinct()
         context['my_data_status'] = True if len(context['my_data']) > 0 else False
         return context
