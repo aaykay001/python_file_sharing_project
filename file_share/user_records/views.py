@@ -80,7 +80,7 @@ class HomePageView(LoginRequiredMixin, CreateView):
             overwrite=True,
             resource_type="raw"
         )
-        # os.remove(final_path)
+        os.remove(final_path)
         save_in_db = FileInfo.objects.create(
             admin_id=request.user.id,
             admin_user_name=request.user.username,
